@@ -6,6 +6,7 @@ OBJ_DIR := obj
 SRC := $(shell find src -name '*.cpp')
 OBJ := $(SRC:src/%.cpp=$(OBJ_DIR)/%.o)
 BIN := bin/$(APP)
+FORMAT_FILES := $(shell find include src -type f)
 
 UNAME_S := $(shell uname -s)
 GLFW_CFLAGS := $(shell pkg-config --cflags glfw3 2>/dev/null)
@@ -15,7 +16,7 @@ OPENGL_LIBS := -lGL
 
 LDFLAGS := $(GLFW_LIBS) $(OPENGL_LIBS)
 
-.PHONY: all run clean fclean re
+.PHONY: all run clean fclean re format
 
 all: $(BIN)
 
@@ -37,3 +38,6 @@ fclean: clean
 	rm -rf bin
 
 re: fclean all
+
+format:
+	clang-format -i $(FORMAT_FILES)
