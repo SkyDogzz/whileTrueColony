@@ -17,7 +17,7 @@ Cette todolist regroupe les prochaines taches par epics. L'objectif est de garde
 ## Epic 2 - Rendu minimal de gameplay
 
 - [x] Afficher une premiere primitive de validation.
-- [ ] Ajouter un type `Color`.
+- [x] Ajouter un type `Color`.
 - [ ] Ajouter un type `Vec2`.
 - [ ] Ajouter un type `Rect` ou `Circle` pour les primitives simples.
 - [ ] Permettre au `Renderer` de dessiner plusieurs objets par frame.
