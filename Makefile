@@ -1,6 +1,6 @@
 APP := while_true_colony
 CXX ?= g++
-CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP
+CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3
 INCLUDE_DIR := include
 OBJ_DIR := obj
 SRC := $(shell find src -name '*.cpp')
