@@ -7,10 +7,8 @@
 #include "Time.hpp"
 #include "Window.hpp"
 #include <GLFW/glfw3.h>
-#include <chrono>
 #include <memory>
 #include <string>
-#include <thread>
 
 struct AppConfig {
     int windowWidth = 1080;

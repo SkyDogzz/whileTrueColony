@@ -1,4 +1,6 @@
 #include "Time.hpp"
+#include "Logger.hpp"
+#include <GLFW/glfw3.h>
 
 Time::Time()
 {

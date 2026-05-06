@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Logger.hpp"
-#include <GLFW/glfw3.h>
-
 class Time {
 public:
     Time();

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Game.hpp"
-#include "Logger.hpp"
-#include <GL/gl.h>
 
 struct RendererConfig {
     float clearColorRed = 0.08f;

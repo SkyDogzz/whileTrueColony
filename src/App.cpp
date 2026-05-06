@@ -1,5 +1,6 @@
 #include "App.hpp"
-#include <GLFW/glfw3.h>
+#include <chrono>
+#include <thread>
 
 App::App() { Logger::debug("App created with default config"); }
 
@@ -28,8 +29,8 @@ void App::init()
     Logger::info("Initializing app");
     Logger::debug("Window config: " + std::to_string(config.windowWidth) + "x" + std::to_string(config.windowHeight)
         + " \"" + config.windowTitle + "\"");
-    Logger::debug("Requested OpenGL version: " + std::to_string(config.openglMajor) + "."
-        + std::to_string(config.openglMinor));
+    Logger::debug(
+        "Requested OpenGL version: " + std::to_string(config.openglMajor) + "." + std::to_string(config.openglMinor));
     Logger::debug("Frame timing: vsync=" + std::string(config.vsync ? "enabled" : "disabled")
         + ", targetFps=" + std::to_string(config.targetFps));
 

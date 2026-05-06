@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
-#include <string>
+#include "Logger.hpp"
+#include <glad/gl.h>
 
 Renderer::Renderer() { Logger::debug("Renderer initialized"); }
 
