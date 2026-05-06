@@ -1,5 +1,6 @@
 #include "Window.hpp"
 #include "Logger.hpp"
+#include <glad/gl.h>
 #include <stdexcept>
 #include <string>
 

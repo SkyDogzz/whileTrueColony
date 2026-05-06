@@ -1,7 +1,8 @@
 APP := while_true_colony
 CXX ?= g++
 CC ?= gcc
-CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3
+#SANITIZE_FLAGS := -fsanitize=address
+CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3 $(SANITIZE_FLAGS)
 CCFLAGS := -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3
 INCLUDE_DIR := include
 THIRD_PARTY_DIR := third_party
@@ -22,7 +23,7 @@ GLFW_LIBS := $(shell pkg-config --libs glfw3 2>/dev/null)
 
 OPENGL_LIBS := -lGL
 
-LDFLAGS := $(GLFW_LIBS) $(OPENGL_LIBS)
+LDFLAGS := $(SANITIZE_FLAGS) $(GLFW_LIBS) $(OPENGL_LIBS)
 
 .PHONY: all run clean fclean re format
 

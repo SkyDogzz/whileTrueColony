@@ -1,4 +1,5 @@
 #include "App.hpp"
+#include <glad/gl.h>
 #include <chrono>
 #include <thread>
 
@@ -61,6 +62,13 @@ bool App::run()
 
     window->makeContextCurrent();
     Logger::debug("OpenGL context is current");
+
+    if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
+        Logger::error("Failed to initialize GLAD");
+        return false;
+    }
+
+    Logger::info("GLAD initialized");
     window->initializeViewport();
     renderer->applyConfig();
 
