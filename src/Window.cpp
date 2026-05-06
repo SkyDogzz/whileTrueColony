@@ -14,8 +14,16 @@ Window::Window(int width, int height, const char* title, int openglMajor, int op
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    if (!window)
-        throw std::runtime_error("Failed to create GLFW window");
+    if (!window) {
+        const char* description = nullptr;
+        const int error = glfwGetError(&description);
+        std::string message = "Failed to create GLFW window";
+        if (error != GLFW_NO_ERROR) {
+            message += " (GLFW error " + std::to_string(error) + ": "
+                + (description ? description : "unknown error") + ")";
+        }
+        throw std::runtime_error(message);
+    }
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     Logger::debug("Framebuffer resize callback registered");

@@ -13,6 +13,11 @@ std::string formatFps(double fps)
     stream << std::fixed << std::setprecision(1) << fps;
     return stream.str();
 }
+
+void glfwErrorCallback(int error, const char* description)
+{
+    Logger::error("GLFW error " + std::to_string(error) + ": " + (description ? description : "unknown error"));
+}
 }
 
 App::App() { Logger::debug("App created with default config"); }
@@ -48,6 +53,7 @@ void App::init()
         + ", targetFps=" + std::to_string(config.targetFps));
 
     Logger::info("Initializing GLFW");
+    glfwSetErrorCallback(glfwErrorCallback);
     if (!glfwInit())
         throw std::runtime_error("Failed to init GLFW");
     glfwInitialized = true;
@@ -81,6 +87,9 @@ bool App::run()
     }
 
     Logger::info("GLAD initialized");
+    const GLubyte* glVersion = glGetString(GL_VERSION);
+    if (glVersion)
+        Logger::info("OpenGL version: " + std::string(reinterpret_cast<const char*>(glVersion)));
     window->initializeViewport();
     renderer->applyConfig();
     renderer->initShaders();
