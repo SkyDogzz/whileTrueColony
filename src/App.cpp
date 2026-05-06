@@ -24,14 +24,14 @@ bool App::run() {
     return false;
   }
 
-  glfwMakeContextCurrent(window->getHandle());
+  window->makeContextCurrent();
 
-  while (!glfwWindowShouldClose(window->getHandle())) {
-    glClear(GL_COLOR_BUFFER_BIT);
+  while (!window->shouldClose()) {
+    renderer.beginFrame();
 
-    glfwSwapBuffers(window->getHandle());
+    window->swapBuffers();
 
-    glfwPollEvents();
+    input.pollEvents();
   }
 
   return true;

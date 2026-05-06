@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <GLFW/glfw3.h>
 
 class Input {
 private:
@@ -10,4 +10,6 @@ private:
 public:
   Input();
   ~Input();
+
+  void pollEvents();
 };

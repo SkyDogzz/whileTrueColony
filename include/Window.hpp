@@ -15,4 +15,7 @@ public:
   ~Window();
 
   GLFWwindow *getHandle() const;
+  void makeContextCurrent();
+  bool shouldClose();
+  void swapBuffers();
 };

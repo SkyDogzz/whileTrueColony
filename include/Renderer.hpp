@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <GL/gl.h>
 
 class Renderer {
 private:
@@ -10,4 +10,6 @@ private:
 public:
   Renderer();
   ~Renderer();
+
+  void beginFrame();
 };

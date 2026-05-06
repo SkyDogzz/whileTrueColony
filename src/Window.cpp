@@ -12,3 +12,9 @@ Window::~Window() {
 }
 
 GLFWwindow *Window::getHandle() const { return window; }
+
+void Window::makeContextCurrent() { glfwMakeContextCurrent(window); }
+
+bool Window::shouldClose() { return glfwWindowShouldClose(window); }
+
+void Window::swapBuffers() { glfwSwapBuffers(window); }

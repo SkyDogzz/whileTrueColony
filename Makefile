@@ -1,10 +1,11 @@
 APP := while_true_colony
 CXX ?= g++
-CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0
+CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP
 INCLUDE_DIR := include
 OBJ_DIR := obj
 SRC := $(shell find src -name '*.cpp')
 OBJ := $(SRC:src/%.cpp=$(OBJ_DIR)/%.o)
+DEP := $(OBJ:.o=.d)
 BIN := bin/$(APP)
 FORMAT_FILES := $(shell find include src -type f)
 
@@ -41,3 +42,5 @@ re: fclean all
 
 format:
 	clang-format -i $(FORMAT_FILES)
+
+-include $(DEP)

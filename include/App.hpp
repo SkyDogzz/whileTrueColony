@@ -5,8 +5,6 @@
 #include "Renderer.hpp"
 #include "Window.hpp"
 #include <GLFW/glfw3.h>
-#include <exception>
-#include <iostream>
 #include <memory>
 
 class App {
