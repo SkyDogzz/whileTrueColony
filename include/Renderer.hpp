@@ -11,8 +11,8 @@ struct RendererConfig {
 
 class Renderer {
 private:
-    Renderer(const Renderer& other);
-    Renderer& operator=(const Renderer& other);
+    Renderer(const Renderer& other) = delete;
+    Renderer& operator=(const Renderer& other) = delete;
 
     RendererConfig config;
     unsigned int VAO = 0;
@@ -28,7 +28,7 @@ public:
     ~Renderer();
 
     void initShaders();
-    void applyConfig();
-    void beginFrame();
-    void render(const Game& game);
+    void applyConfig() const;
+    void beginFrame() const;
+    void render(const Game& game) const;
 };

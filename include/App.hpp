@@ -27,8 +27,8 @@ struct AppConfig {
 
 class App {
 private:
-    App(const App& other);
-    App& operator=(const App& other);
+    App(const App& other) = delete;
+    App& operator=(const App& other) = delete;
 
     AppConfig config;
     std::unique_ptr<Window> window;

@@ -32,13 +32,13 @@ Window::~Window()
 
 GLFWwindow* Window::getHandle() const { return window; }
 
-void Window::makeContextCurrent()
+void Window::makeContextCurrent() const
 {
     glfwMakeContextCurrent(window);
     Logger::debug("Window context made current");
 }
 
-void Window::initializeViewport()
+void Window::initializeViewport() const
 {
     int width = 0;
     int height = 0;
@@ -48,9 +48,9 @@ void Window::initializeViewport()
     Logger::debug("Viewport initialized: " + std::to_string(width) + "x" + std::to_string(height));
 }
 
-bool Window::shouldClose() { return glfwWindowShouldClose(window); }
+bool Window::shouldClose() const { return glfwWindowShouldClose(window); }
 
-void Window::swapBuffers() { glfwSwapBuffers(window); }
+void Window::swapBuffers() const { glfwSwapBuffers(window); }
 
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {

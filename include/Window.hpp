@@ -5,8 +5,8 @@
 
 class Window {
 private:
-    Window(const Window& other);
-    Window& operator=(const Window& other);
+    Window(const Window& other) = delete;
+    Window& operator=(const Window& other) = delete;
 
     GLFWwindow* window = nullptr;
 
@@ -17,8 +17,8 @@ public:
     ~Window();
 
     GLFWwindow* getHandle() const;
-    void makeContextCurrent();
-    void initializeViewport();
-    bool shouldClose();
-    void swapBuffers();
+    void makeContextCurrent() const;
+    void initializeViewport() const;
+    bool shouldClose() const;
+    void swapBuffers() const;
 };

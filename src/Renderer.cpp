@@ -111,7 +111,7 @@ void Renderer::initGeometry()
     Logger::debug("Renderer geometry initialized");
 }
 
-void Renderer::applyConfig()
+void Renderer::applyConfig() const
 {
     glClearColor(config.clearColorRed, config.clearColorGreen, config.clearColorBlue, config.clearColorAlpha);
     Logger::debug("Renderer clear color applied: " + std::to_string(config.clearColorRed) + ", "
@@ -119,12 +119,12 @@ void Renderer::applyConfig()
         + std::to_string(config.clearColorAlpha));
 }
 
-void Renderer::beginFrame()
+void Renderer::beginFrame() const
 {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::render(const Game& game)
+void Renderer::render(const Game& game) const
 {
     (void)game;
 

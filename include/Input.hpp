@@ -2,8 +2,8 @@
 
 class Input {
 private:
-    Input(const Input& other);
-    Input& operator=(const Input& other);
+    Input(const Input& other) = delete;
+    Input& operator=(const Input& other) = delete;
 
 public:
     Input();

@@ -2,6 +2,7 @@
 #include <chrono>
 #include <glad/gl.h>
 #include <iomanip>
+#include <stdexcept>
 #include <sstream>
 #include <thread>
 
@@ -66,7 +67,7 @@ bool App::run()
 
     try {
         init();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         Logger::error(e.what());
         return false;
     }
