@@ -18,8 +18,8 @@ struct AppConfig {
     int openglMajor = 4;
     int openglMinor = 6;
 
-    int targetFps = 60;
-    bool vsync = true;
+    int targetFps = 0;
+    bool vsync = false;
 
     RendererConfig renderer;
     LogLevel logLevel = LogLevel::Debug;

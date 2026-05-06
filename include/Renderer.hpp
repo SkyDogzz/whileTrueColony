@@ -15,12 +15,19 @@ private:
     Renderer& operator=(const Renderer& other);
 
     RendererConfig config;
+    unsigned int VAO = 0;
+    unsigned int VBO = 0;
+    unsigned int EBO = 0;
+    unsigned int shaderProgram = 0;
+
+    void initGeometry();
 
 public:
     Renderer();
     explicit Renderer(const RendererConfig& config);
     ~Renderer();
 
+    void initShaders();
     void applyConfig();
     void beginFrame();
     void render(const Game& game);

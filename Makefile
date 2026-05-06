@@ -1,9 +1,11 @@
 APP := while_true_colony
 CXX ?= g++
 CC ?= gcc
-#SANITIZE_FLAGS := -fsanitize=address
-CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3 $(SANITIZE_FLAGS)
-CCFLAGS := -Wall -Wextra -Wpedantic -O0 -MMD -MP -g3
+# SANITIZE_FLAGS := -fsanitize=address
+CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -O0 -MMD -MP $(SANITIZE_FLAGS)
+CXXFLAGS += -g3
+CCFLAGS := -Wall -Wextra -Wpedantic -O0 -MMD -MP
+CCFLAGS += -g3
 INCLUDE_DIR := include
 THIRD_PARTY_DIR := third_party
 GLAD_DIR := $(THIRD_PARTY_DIR)/glad

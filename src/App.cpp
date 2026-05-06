@@ -1,7 +1,18 @@
 #include "App.hpp"
-#include <glad/gl.h>
 #include <chrono>
+#include <glad/gl.h>
+#include <iomanip>
+#include <sstream>
 #include <thread>
+
+namespace {
+std::string formatFps(double fps)
+{
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(1) << fps;
+    return stream.str();
+}
+}
 
 App::App() { Logger::debug("App created with default config"); }
 
@@ -71,16 +82,29 @@ bool App::run()
     Logger::info("GLAD initialized");
     window->initializeViewport();
     renderer->applyConfig();
+    renderer->initShaders();
 
     glfwSwapInterval(config.vsync ? 1 : 0);
     Logger::info(config.vsync ? "VSync enabled" : "VSync disabled");
     if (!config.vsync && config.targetFps > 0)
         Logger::info("Target FPS set to " + std::to_string(config.targetFps));
 
+    int fpsFrameCount = 0;
+    double fpsElapsedTime = 0.0;
+
     while (!window->shouldClose()) {
         const double frameStart = glfwGetTime();
 
         time->update();
+        fpsFrameCount++;
+        fpsElapsedTime += time->getDeltaTime();
+
+        if (fpsElapsedTime >= 1.0) {
+            Logger::debug("FPS: " + formatFps(fpsFrameCount / fpsElapsedTime));
+            fpsFrameCount = 0;
+            fpsElapsedTime = 0.0;
+        }
+
         input->pollEvents();
 
         game->update(time->getDeltaTime());
