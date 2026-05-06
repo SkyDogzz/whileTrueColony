@@ -35,11 +35,12 @@ void App::init() {
   glfwInitialized = true;
 
   time = std::make_unique<Time>();
-  renderer = std::make_unique<Renderer>();
+  renderer = std::make_unique<Renderer>(config.renderer);
   game = std::make_unique<Game>();
   input = std::make_unique<Input>();
   window = std::make_unique<Window>(config.windowWidth, config.windowHeight,
                                     config.windowTitle.c_str());
+  Logger::info("App initialized");
 }
 
 bool App::run() {
@@ -54,6 +55,8 @@ bool App::run() {
 
   window->makeContextCurrent();
   Logger::debug("OpenGL context is current");
+  window->initializeViewport();
+  renderer->applyConfig();
 
   glfwSwapInterval(config.vsync ? 1 : 0);
   Logger::info(config.vsync ? "VSync enabled" : "VSync disabled");
@@ -64,9 +67,13 @@ bool App::run() {
     const double frameStart = glfwGetTime();
 
     time->update();
-    renderer->beginFrame();
-    window->swapBuffers();
     input->pollEvents();
+
+    game->update(time->getDeltaTime());
+
+    renderer->beginFrame();
+    renderer->render(*game);
+    window->swapBuffers();
 
     if (!config.vsync && config.targetFps > 0) {
       const double frameTime = glfwGetTime() - frameStart;

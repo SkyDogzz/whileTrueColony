@@ -10,4 +10,6 @@ private:
 public:
   Game();
   ~Game();
+
+  void update(float deltaTime);
 };

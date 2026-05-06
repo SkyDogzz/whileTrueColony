@@ -20,6 +20,7 @@ struct AppConfig {
   int targetFps = 60;
   bool vsync = true;
 
+  RendererConfig renderer;
   LogLevel logLevel = LogLevel::Debug;
 };
 

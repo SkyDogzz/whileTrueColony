@@ -10,6 +10,8 @@ Window::Window(int width, int height, const char *title) {
   if (!window)
     throw std::runtime_error("Failed to create GLFW window");
 
+  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  Logger::debug("Framebuffer resize callback registered");
   Logger::info("Window created");
 }
 
@@ -27,6 +29,24 @@ void Window::makeContextCurrent() {
   Logger::debug("Window context made current");
 }
 
+void Window::initializeViewport() {
+  int width = 0;
+  int height = 0;
+
+  glfwGetFramebufferSize(window, &width, &height);
+  glViewport(0, 0, width, height);
+  Logger::debug("Viewport initialized: " + std::to_string(width) + "x" +
+                std::to_string(height));
+}
+
 bool Window::shouldClose() { return glfwWindowShouldClose(window); }
 
 void Window::swapBuffers() { glfwSwapBuffers(window); }
+
+void Window::framebufferSizeCallback(GLFWwindow *window, int width,
+                                     int height) {
+  (void)window;
+  glViewport(0, 0, width, height);
+  Logger::debug("Framebuffer resized: " + std::to_string(width) + "x" +
+                std::to_string(height));
+}
