@@ -5,16 +5,16 @@
 
 class Time {
 public:
-  Time();
-  ~Time();
+    Time();
+    ~Time();
 
-  void update();
+    void update();
 
-  float getDeltaTime() const;
-  float getElapsedTime() const;
+    float getDeltaTime() const;
+    float getElapsedTime() const;
 
 private:
-  double lastFrame = 0.0;
-  float deltaTime = 0.0f;
-  float elapsedTime = 0.0f;
+    double lastFrame = 0.0;
+    float deltaTime = 0.0f;
+    float elapsedTime = 0.0f;
 };

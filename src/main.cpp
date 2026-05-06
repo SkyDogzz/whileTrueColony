@@ -1,9 +1,10 @@
 #include "App.hpp"
 
-int main(void) {
-  App app;
+int main(void)
+{
+    App app;
 
-  app.run();
+    app.run();
 
-  return 0;
+    return 0;
 }

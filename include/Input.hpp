@@ -4,12 +4,12 @@
 
 class Input {
 private:
-  Input(const Input &other);
-  Input &operator=(const Input &other);
+    Input(const Input& other);
+    Input& operator=(const Input& other);
 
 public:
-  Input();
-  ~Input();
+    Input();
+    ~Input();
 
-  void pollEvents();
+    void pollEvents();
 };

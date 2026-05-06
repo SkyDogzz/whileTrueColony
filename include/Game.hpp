@@ -4,12 +4,12 @@
 
 class Game {
 private:
-  Game(const Game &other);
-  Game &operator=(const Game &other);
+    Game(const Game& other);
+    Game& operator=(const Game& other);
 
 public:
-  Game();
-  ~Game();
+    Game();
+    ~Game();
 
-  void update(float deltaTime);
+    void update(float deltaTime);
 };

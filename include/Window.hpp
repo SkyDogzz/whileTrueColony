@@ -6,21 +6,20 @@
 
 class Window {
 private:
-  Window(const Window &other);
-  Window &operator=(const Window &other);
+    Window(const Window& other);
+    Window& operator=(const Window& other);
 
-  GLFWwindow *window = nullptr;
+    GLFWwindow* window = nullptr;
 
-  static void framebufferSizeCallback(GLFWwindow *window, int width,
-                                      int height);
+    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 public:
-  Window(int width, int height, const char *title);
-  ~Window();
+    Window(int width, int height, const char* title);
+    ~Window();
 
-  GLFWwindow *getHandle() const;
-  void makeContextCurrent();
-  void initializeViewport();
-  bool shouldClose();
-  void swapBuffers();
+    GLFWwindow* getHandle() const;
+    void makeContextCurrent();
+    void initializeViewport();
+    bool shouldClose();
+    void swapBuffers();
 };
