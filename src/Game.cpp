@@ -1,5 +1,6 @@
 #include "Game.hpp"
+#include "Logger.hpp"
 
-Game::Game() {}
+Game::Game() { Logger::debug("Game initialized"); }
 
-Game::~Game() {}
+Game::~Game() { Logger::debug("Game destroyed"); }

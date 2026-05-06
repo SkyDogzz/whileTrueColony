@@ -2,11 +2,13 @@
 
 #include "Game.hpp"
 #include "Input.hpp"
+#include "Logger.hpp"
 #include "Renderer.hpp"
 #include "Window.hpp"
 #include <GLFW/glfw3.h>
+#include <chrono>
 #include <memory>
-#include <string>#include <chrono>
+#include <string>
 #include <thread>
 
 struct AppConfig {
@@ -16,6 +18,8 @@ struct AppConfig {
 
   int targetFps = 60;
   bool vsync = true;
+
+  LogLevel logLevel = LogLevel::Debug;
 };
 
 class App {
@@ -25,9 +29,9 @@ private:
 
   AppConfig config;
   std::unique_ptr<Window> window;
-  Renderer renderer;
-  Game game;
-  Input input;
+  std::unique_ptr<Renderer> renderer;
+  std::unique_ptr<Game> game;
+  std::unique_ptr<Input> input;
   bool glfwInitialized = false;
 
   void init();
