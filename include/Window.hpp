@@ -14,7 +14,7 @@ private:
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 public:
-    Window(int width, int height, const char* title);
+    Window(int width, int height, const char* title, int openglMajor, int openglMinor);
     ~Window();
 
     GLFWwindow* getHandle() const;

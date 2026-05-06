@@ -28,6 +28,8 @@ void App::init()
     Logger::info("Initializing app");
     Logger::debug("Window config: " + std::to_string(config.windowWidth) + "x" + std::to_string(config.windowHeight)
         + " \"" + config.windowTitle + "\"");
+    Logger::debug("Requested OpenGL version: " + std::to_string(config.openglMajor) + "."
+        + std::to_string(config.openglMinor));
     Logger::debug("Frame timing: vsync=" + std::string(config.vsync ? "enabled" : "disabled")
         + ", targetFps=" + std::to_string(config.targetFps));
 
@@ -40,7 +42,8 @@ void App::init()
     renderer = std::make_unique<Renderer>(config.renderer);
     game = std::make_unique<Game>();
     input = std::make_unique<Input>();
-    window = std::make_unique<Window>(config.windowWidth, config.windowHeight, config.windowTitle.c_str());
+    window = std::make_unique<Window>(
+        config.windowWidth, config.windowHeight, config.windowTitle.c_str(), config.openglMajor, config.openglMinor);
     Logger::info("App initialized");
 }
 

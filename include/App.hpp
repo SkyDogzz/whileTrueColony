@@ -16,6 +16,8 @@ struct AppConfig {
     int windowWidth = 1080;
     int windowHeight = 780;
     std::string windowTitle = "While True Colony";
+    int openglMajor = 4;
+    int openglMinor = 6;
 
     int targetFps = 60;
     bool vsync = true;

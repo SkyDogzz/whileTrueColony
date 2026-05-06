@@ -2,9 +2,15 @@
 #include "Logger.hpp"
 #include <string>
 
-Window::Window(int width, int height, const char* title)
+Window::Window(int width, int height, const char* title, int openglMajor, int openglMinor)
 {
     Logger::info("Creating window: " + std::to_string(width) + "x" + std::to_string(height) + " \"" + title + "\"");
+    Logger::debug("Applying OpenGL version hints: " + std::to_string(openglMajor) + "."
+        + std::to_string(openglMinor));
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openglMajor);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openglMinor);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!window)
