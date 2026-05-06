@@ -34,6 +34,7 @@ void App::init() {
     throw std::runtime_error("Failed to init GLFW");
   glfwInitialized = true;
 
+  time = std::make_unique<Time>();
   renderer = std::make_unique<Renderer>();
   game = std::make_unique<Game>();
   input = std::make_unique<Input>();
@@ -62,6 +63,7 @@ bool App::run() {
   while (!window->shouldClose()) {
     const double frameStart = glfwGetTime();
 
+    time->update();
     renderer->beginFrame();
     window->swapBuffers();
     input->pollEvents();

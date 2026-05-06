@@ -4,6 +4,7 @@
 #include "Input.hpp"
 #include "Logger.hpp"
 #include "Renderer.hpp"
+#include "Time.hpp"
 #include "Window.hpp"
 #include <GLFW/glfw3.h>
 #include <chrono>
@@ -32,6 +33,7 @@ private:
   std::unique_ptr<Renderer> renderer;
   std::unique_ptr<Game> game;
   std::unique_ptr<Input> input;
+  std::unique_ptr<Time> time;
   bool glfwInitialized = false;
 
   void init();
