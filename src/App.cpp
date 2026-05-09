@@ -61,9 +61,9 @@ void App::init()
     time = std::make_unique<Time>();
     renderer = std::make_unique<Renderer>(config.renderer);
     game = std::make_unique<Game>();
-    input = std::make_unique<Input>();
     window = std::make_unique<Window>(
         config.windowWidth, config.windowHeight, config.windowTitle.c_str(), config.openglMajor, config.openglMinor);
+    input = std::make_unique<Input>(window->getHandle());
     Logger::info("App initialized");
 }
 

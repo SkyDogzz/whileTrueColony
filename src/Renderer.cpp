@@ -136,9 +136,22 @@ void Renderer::initGeometry()
 
     addHexagon(glm::vec3(0.0f, 0.0f, 0.0f));
 
+    const float hexagonRadius = 0.5f;
+    const float centerDistance = std::sqrt(3.0f) * hexagonRadius;
+
+    std::vector<glm::vec3> directions;
     for (int multiplier = 1; multiplier <= 11; multiplier += 2) {
-        const float angle = M_PI / 6.0f * multiplier;
-        addHexagon(glm::vec3(std::cos(angle) * (sqrt(3) / 2), std::sin(angle) * (sqrt(3) / 2), 0.0f));
+        const float angle = static_cast<float>(M_PI) / 6.0f * multiplier;
+        directions.push_back(glm::vec3(std::cos(angle) * centerDistance, std::sin(angle) * centerDistance, 0.0f));
+    }
+
+    for (std::size_t i = 0; i < directions.size(); i++) {
+        const glm::vec3& direction = directions.at(i);
+        const glm::vec3& nextDirection = directions.at((i + 1) % directions.size());
+
+        addHexagon(direction);
+        addHexagon(direction * 2.0f);
+        addHexagon(direction + nextDirection);
     }
 
     indexCount = static_cast<unsigned int>(indices.size());
@@ -183,8 +196,9 @@ void Renderer::render(const Game& game, float elapsedTime) const
     glUseProgram(shaderProgram);
 
     glm::mat4 transform(1.0f);
+    transform = glm::rotate(transform, (float)M_PI / 4, glm::vec3(1.0f, 0.0f, 0.0f));
     transform = glm::rotate(transform, elapsedTime, glm::vec3(0.0f, 0.0f, 1.0f));
-    transform = glm::scale(transform, glm::vec3(0.5, 0.5, 0.5));
+    transform = glm::scale(transform, glm::vec3(0.2, 0.2, 0.2));
 
     const int transformLocation = glGetUniformLocation(shaderProgram, "uTransform");
     glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
