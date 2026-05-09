@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "Logger.hpp"
+#include <cmath>
 #include <glad/gl.h>
 
 Renderer::Renderer() { Logger::debug("Renderer initialized"); }
@@ -79,15 +80,40 @@ void Renderer::initShaders()
 
 void Renderer::initGeometry()
 {
-    const float vertices[] = {
-        0.5f, 0.5f, 0.0f, // top right
-        0.5f, -0.5f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f // top left
-    };
+    float vertices[21];
+    vertices[0] = 0.f;
+    vertices[1] = 0.f;
+    vertices[2] = 0.f;
+    for (int i = 0; i < 6; i++) {
+        const float angle = 2.0f * M_PI * i / 6.0f;
+        float x = cos(angle);
+        float y = sin(angle);
+        vertices[3 * (i + 1)] = x;
+        vertices[3 * (i + 1) + 1] = y;
+        vertices[3 * (i + 1) + 2] = 0;
+    }
     const unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
+        0,
+        1,
+        2,
+        0,
+        2,
+        3,
+        0,
+        3,
+        4,
+        0,
+        4,
+        5,
+        0,
+        5,
+        6,
+        0,
+        6,
+        7,
+        0,
+        6,
+        1,
     };
 
     glGenVertexArrays(1, &VAO);
@@ -119,10 +145,7 @@ void Renderer::applyConfig() const
         + std::to_string(config.clearColorAlpha));
 }
 
-void Renderer::beginFrame() const
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-}
+void Renderer::beginFrame() const { glClear(GL_COLOR_BUFFER_BIT); }
 
 void Renderer::render(const Game& game) const
 {
@@ -130,6 +153,6 @@ void Renderer::render(const Game& game) const
 
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
