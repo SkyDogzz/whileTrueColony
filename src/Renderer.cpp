@@ -2,6 +2,13 @@
 #include "Logger.hpp"
 #include <cmath>
 #include <glad/gl.h>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <vector>
 
 Renderer::Renderer() { Logger::debug("Renderer initialized"); }
 
@@ -27,9 +34,10 @@ Renderer::~Renderer()
 
 const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
+                                 "uniform mat4 uTransform;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                 "   gl_Position = uTransform * vec4(aPos, 1.0);\n"
                                  "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
@@ -80,41 +88,38 @@ void Renderer::initShaders()
 
 void Renderer::initGeometry()
 {
-    float vertices[21];
-    vertices[0] = 0.f;
-    vertices[1] = 0.f;
-    vertices[2] = 0.f;
-    for (int i = 0; i < 6; i++) {
-        const float angle = 2.0f * M_PI * i / 6.0f;
-        float x = cos(angle);
-        float y = sin(angle);
-        vertices[3 * (i + 1)] = x;
-        vertices[3 * (i + 1) + 1] = y;
-        vertices[3 * (i + 1) + 2] = 0;
-    }
-    const unsigned int indices[] = {
-        0,
-        1,
-        2,
-        0,
-        2,
-        3,
-        0,
-        3,
-        4,
-        0,
-        4,
-        5,
-        0,
-        5,
-        6,
-        0,
-        6,
-        7,
-        0,
-        6,
-        1,
+    std::vector<glm::vec3> vertices;
+    std::vector<unsigned int> indices;
+
+    auto addHexagon = [&vertices, &indices](const glm::vec3& center) {
+        const unsigned int centerIndex = static_cast<unsigned int>(vertices.size());
+
+        vertices.push_back(center);
+        for (int i = 0; i < 6; i++) {
+            const float angle = 2.0f * M_PI * i / 6.0f;
+            const float x = center.x + std::cos(angle) / 2.0f;
+            const float y = center.y + std::sin(angle) / 2.0f;
+            vertices.push_back(glm::vec3(x, y, 0.0f));
+        }
+
+        for (int i = 1; i < 6; i++) {
+            indices.push_back(centerIndex);
+            indices.push_back(centerIndex + i);
+            indices.push_back(centerIndex + i + 1);
+        }
+        indices.push_back(centerIndex);
+        indices.push_back(centerIndex + 6);
+        indices.push_back(centerIndex + 1);
     };
+
+    addHexagon(glm::vec3(0.0f, 0.0f, 0.0f));
+
+    for (int multiplier = 1; multiplier <= 11; multiplier += 2) {
+        const float angle = M_PI / 6.0f * multiplier;
+        addHexagon(glm::vec3(std::cos(angle), std::sin(angle), 0.0f));
+    }
+
+    indexCount = static_cast<unsigned int>(indices.size());
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -123,10 +128,10 @@ void Renderer::initGeometry()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -147,12 +152,20 @@ void Renderer::applyConfig() const
 
 void Renderer::beginFrame() const { glClear(GL_COLOR_BUFFER_BIT); }
 
-void Renderer::render(const Game& game) const
+void Renderer::render(const Game& game, float elapsedTime) const
 {
     (void)game;
 
     glUseProgram(shaderProgram);
+
+    glm::mat4 transform(1.0f);
+    transform = glm::rotate(transform, elapsedTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    transform = glm::scale(transform, glm::vec3(0.5, 0.5, 0.5));
+
+    const int transformLocation = glGetUniformLocation(shaderProgram, "uTransform");
+    glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
+
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }

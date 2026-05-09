@@ -120,7 +120,7 @@ bool App::run()
         game->update(time->getDeltaTime());
 
         renderer->beginFrame();
-        renderer->render(*game);
+        renderer->render(*game, time->getElapsedTime());
         window->swapBuffers();
 
         if (!config.vsync && config.targetFps > 0) {

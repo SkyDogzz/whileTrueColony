@@ -19,6 +19,7 @@ private:
     unsigned int VBO = 0;
     unsigned int EBO = 0;
     unsigned int shaderProgram = 0;
+    unsigned int indexCount = 0;
 
     void initGeometry();
 
@@ -30,5 +31,5 @@ public:
     void initShaders();
     void applyConfig() const;
     void beginFrame() const;
-    void render(const Game& game) const;
+    void render(const Game& game, float elapsedTime) const;
 };
