@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 #include "Logger.hpp"
 #include <cmath>
+#include <cstddef>
 #include <glad/gl.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -34,17 +35,26 @@ Renderer::~Renderer()
 
 const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
+                                 "layout (location = 1) in vec3 aColor;\n"
+                                 "out vec3 ourColor;\n"
                                  "uniform mat4 uTransform;\n"
                                  "void main()\n"
                                  "{\n"
                                  "   gl_Position = uTransform * vec4(aPos, 1.0);\n"
+                                 "  ourColor = aColor;\n"
                                  "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
+                                   "in vec3 ourColor;\n"
                                    "out vec4 FragColor;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                   "   FragColor = vec4(ourColor, 1.0f);\n"
                                    "}\n\0";
+
+struct Vertex {
+    glm::vec3 pos;
+    glm::vec3 color;
+};
 
 void Renderer::initShaders()
 {
@@ -88,18 +98,28 @@ void Renderer::initShaders()
 
 void Renderer::initGeometry()
 {
-    std::vector<glm::vec3> vertices;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+    std::vector<glm::vec3> hexagonColor;
+    hexagonColor.push_back({ 1.f, 1.f, 1.f });
+    hexagonColor.push_back({ 1.f, 0.f, 0.f });
+    hexagonColor.push_back({ 0.f, 1.f, 0.f });
+    hexagonColor.push_back({ 0.f, 0.f, 1.f });
+    hexagonColor.push_back({ 1.f, 1.f, 0.f });
+    hexagonColor.push_back({ 0.f, 1.f, 1.f });
+    hexagonColor.push_back({ 1.f, 0.f, 1.f });
 
-    auto addHexagon = [&vertices, &indices](const glm::vec3& center) {
+    auto addHexagon = [&vertices, &indices, &hexagonColor](const glm::vec3& center) {
+        static unsigned int hexagonIndex = 0;
         const unsigned int centerIndex = static_cast<unsigned int>(vertices.size());
+        const glm::vec3 color = hexagonColor.at(hexagonIndex % hexagonColor.size());
 
-        vertices.push_back(center);
+        vertices.push_back({ center, color });
         for (int i = 0; i < 6; i++) {
             const float angle = 2.0f * M_PI * i / 6.0f;
             const float x = center.x + std::cos(angle) / 2.0f;
             const float y = center.y + std::sin(angle) / 2.0f;
-            vertices.push_back(glm::vec3(x, y, 0.0f));
+            vertices.push_back({ glm::vec3(x, y, 0.0f), color });
         }
 
         for (int i = 1; i < 6; i++) {
@@ -110,6 +130,8 @@ void Renderer::initGeometry()
         indices.push_back(centerIndex);
         indices.push_back(centerIndex + 6);
         indices.push_back(centerIndex + 1);
+
+        hexagonIndex++;
     };
 
     addHexagon(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -128,13 +150,15 @@ void Renderer::initGeometry()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
