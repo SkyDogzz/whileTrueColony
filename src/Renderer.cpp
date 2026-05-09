@@ -138,7 +138,7 @@ void Renderer::initGeometry()
 
     for (int multiplier = 1; multiplier <= 11; multiplier += 2) {
         const float angle = M_PI / 6.0f * multiplier;
-        addHexagon(glm::vec3(std::cos(angle), std::sin(angle), 0.0f));
+        addHexagon(glm::vec3(std::cos(angle) * (sqrt(3) / 2), std::sin(angle) * (sqrt(3) / 2), 0.0f));
     }
 
     indexCount = static_cast<unsigned int>(indices.size());
