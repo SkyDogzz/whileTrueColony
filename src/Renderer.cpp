@@ -1,5 +1,7 @@
 #include "Renderer.hpp"
 #include "Logger.hpp"
+#include "Shader.hpp"
+#include <cmath>
 #include <glad/gl.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -7,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <numbers>
 #include <vector>
 
 Renderer::Renderer() { Logger::debug("Renderer initialized"); }
@@ -56,40 +59,44 @@ struct Vertex {
 
 void Renderer::initShaders()
 {
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        Logger::error("Vertex shader compilation failed: " + std::string(infoLog));
-    }
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        Logger::error("Fragment shader compilation failed: " + std::string(infoLog));
-    }
-    // link shaders
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        Logger::error("Shader program linking failed: " + std::string(infoLog));
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    // glCompileShader(vertexShader);
+    // // check for shader compile errors
+    // int success;
+    // char infoLog[512];
+    // glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    // if (!success) {
+    //     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    //     Logger::error("Vertex shader compilation failed: " + std::string(infoLog));
+    // }
+    // // fragment shader
+    // unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    // glCompileShader(fragmentShader);
+    // // check for shader compile errors
+    // glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    // if (!success) {
+    //     glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    //     Logger::error("Fragment shader compilation failed: " + std::string(infoLog));
+    // }
+    // // link shaders
+    // shaderProgram = glCreateProgram();
+    // glAttachShader(shaderProgram, vertexShader);
+    // glAttachShader(shaderProgram, fragmentShader);
+    // glLinkProgram(shaderProgram);
+    // // check for linking errors
+    // glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    // if (!success) {
+    //     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+    //     Logger::error("Shader program linking failed: " + std::string(infoLog));
+    // }
+    // glDeleteShader(vertexShader);
+    // glDeleteShader(fragmentShader);
+
+    Shader shader = Shader("assets/shaders/shad.vert", "assets/shaders/shad.frag");
+    shaderProgram = shader.ID;
+    glUseProgram(shaderProgram);
 
     initGeometry();
 }
@@ -114,7 +121,7 @@ void Renderer::initGeometry()
 
         vertices.push_back({ center, color });
         for (int i = 0; i < 6; i++) {
-            const float angle = 2.0f * M_PI * i / 6.0f;
+            const float angle = 2.0f * std::numbers::pi_v<float> * i / 6.0f;
             const float x = center.x + std::cos(angle) / 2.0f;
             const float y = center.y + std::sin(angle) / 2.0f;
             vertices.push_back({ glm::vec3(x, y, 0.0f), color });
@@ -139,7 +146,7 @@ void Renderer::initGeometry()
 
     std::vector<glm::vec3> directions;
     for (int multiplier = 1; multiplier <= 11; multiplier += 2) {
-        const float angle = static_cast<float>(M_PI) / 6.0f * multiplier;
+        const float angle = std::numbers::pi_v<float> / 6.0f * multiplier;
         directions.push_back(glm::vec3(std::cos(angle) * centerDistance, std::sin(angle) * centerDistance, 0.0f));
     }
 
@@ -194,7 +201,7 @@ void Renderer::render(const Game& game, float elapsedTime) const
     glUseProgram(shaderProgram);
 
     glm::mat4 transform(1.0f);
-    transform = glm::rotate(transform, (float)M_PI / 4, glm::vec3(1.0f, 0.0f, 0.0f));
+    transform = glm::rotate(transform, std::numbers::pi_v<float> / 4, glm::vec3(1.0f, 0.0f, 0.0f));
     transform = glm::rotate(transform, elapsedTime, glm::vec3(0.0f, 0.0f, 1.0f));
     transform = glm::scale(transform, glm::vec3(0.2, 0.2, 0.2));
 
