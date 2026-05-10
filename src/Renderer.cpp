@@ -1,7 +1,5 @@
 #include "Renderer.hpp"
 #include "Logger.hpp"
-#include <cmath>
-#include <cstddef>
 #include <glad/gl.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
