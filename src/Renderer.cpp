@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
 #include <numbers>
 #include <stdexcept>
@@ -231,8 +232,8 @@ void Renderer::render(const Game& game, float elapsedTime) const
     glUseProgram(shaderProgram);
 
     glm::mat4 transform(1.0f);
-    transform = glm::rotate(transform, std::numbers::pi_v<float> / 4, glm::vec3(1.0f, 0.0f, 0.0f));
-    transform = glm::rotate(transform, elapsedTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    transform = glm::rotate(transform, static_cast<float>(glm::radians(30.)), glm::vec3(-1.0f, 0.0f, 0.0f));
+    transform = glm::rotate(transform, elapsedTime, glm::vec3(0.0f, 1.0f, 0.0f));
     transform = glm::scale(transform, glm::vec3(0.2, 0.2, 0.2));
 
     const int transformLocation = glGetUniformLocation(shaderProgram, "uTransform");
