@@ -2,6 +2,8 @@
 #include "Logger.hpp"
 #include "Shader.hpp"
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <glad/gl.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -10,6 +12,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <numbers>
+#include <stdexcept>
 #include <vector>
 
 Renderer::Renderer() { Logger::debug("Renderer initialized"); }
@@ -34,71 +37,96 @@ Renderer::~Renderer()
     Logger::debug("Renderer destroyed");
 }
 
-const char* vertexShaderSource = "#version 330 core\n"
-                                 "layout (location = 0) in vec3 aPos;\n"
-                                 "layout (location = 1) in vec3 aColor;\n"
-                                 "out vec3 ourColor;\n"
-                                 "uniform mat4 uTransform;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "   gl_Position = uTransform * vec4(aPos, 1.0);\n"
-                                 "  ourColor = aColor;\n"
-                                 "}\0";
-const char* fragmentShaderSource = "#version 330 core\n"
-                                   "in vec3 ourColor;\n"
-                                   "out vec4 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = vec4(ourColor, 1.0f);\n"
-                                   "}\n\0";
-
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
 };
 
+static unsigned int parseObjIndex(const char* token)
+{
+    const unsigned long index = std::strtoul(token, nullptr, 10);
+    if (index == 0) {
+        throw std::runtime_error("ERROR::OBJ::INVALID_FACE_INDEX");
+    }
+    return static_cast<unsigned int>(index - 1);
+}
+
 void Renderer::initShaders()
 {
-    // unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    // glCompileShader(vertexShader);
-    // // check for shader compile errors
-    // int success;
-    // char infoLog[512];
-    // glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    // if (!success) {
-    //     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    //     Logger::error("Vertex shader compilation failed: " + std::string(infoLog));
-    // }
-    // // fragment shader
-    // unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    // glCompileShader(fragmentShader);
-    // // check for shader compile errors
-    // glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    // if (!success) {
-    //     glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-    //     Logger::error("Fragment shader compilation failed: " + std::string(infoLog));
-    // }
-    // // link shaders
-    // shaderProgram = glCreateProgram();
-    // glAttachShader(shaderProgram, vertexShader);
-    // glAttachShader(shaderProgram, fragmentShader);
-    // glLinkProgram(shaderProgram);
-    // // check for linking errors
-    // glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    // if (!success) {
-    //     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    //     Logger::error("Shader program linking failed: " + std::string(infoLog));
-    // }
-    // glDeleteShader(vertexShader);
-    // glDeleteShader(fragmentShader);
-
     Shader shader = Shader("assets/shaders/shad.vert", "assets/shaders/shad.frag");
     shaderProgram = shader.ID;
     glUseProgram(shaderProgram);
 
-    initGeometry();
+    // initGeometry();
+    initGeometry("assets/obj/teapot.obj");
+}
+
+void Renderer::initGeometry(const std::string& filename)
+{
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<glm::vec3> vertColor;
+    unsigned int vertIndex = 0;
+
+    vertColor.push_back({ 1.f, 1.f, 1.f });
+    vertColor.push_back({ 1.f, 0.f, 0.f });
+    vertColor.push_back({ 0.f, 1.f, 0.f });
+    vertColor.push_back({ 0.f, 0.f, 1.f });
+    vertColor.push_back({ 1.f, 1.f, 0.f });
+    vertColor.push_back({ 0.f, 1.f, 1.f });
+    vertColor.push_back({ 1.f, 0.f, 1.f });
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error(std::string("ERROR::FILE::FILE_NOT_SUCCESSFULLY_READ: ") + filename);
+    }
+    char line[100];
+    while (file.getline(line, 100)) {
+        if (line[0] == 'v' && line[1] == ' ') {
+            glm::vec3 pos;
+            char* token = std::strtok(line, " ");
+            token = std::strtok(NULL, " ");
+            pos.x = atof(token);
+            token = std::strtok(NULL, " ");
+            pos.y = atof(token);
+            token = std::strtok(NULL, " ");
+            pos.z = atof(token);
+            vertices.push_back({ pos, vertColor.at(vertIndex % vertColor.size()) });
+            vertIndex++;
+        } else if (line[0] == 'f' && line[1] == ' ') {
+            char* token = std::strtok(line, " ");
+            token = std::strtok(NULL, " ");
+            indices.push_back(parseObjIndex(token));
+            token = std::strtok(NULL, " ");
+            indices.push_back(parseObjIndex(token));
+            token = std::strtok(NULL, " ");
+            indices.push_back(parseObjIndex(token));
+        }
+    }
+
+    indexCount = static_cast<unsigned int>(indices.size());
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    Logger::debug("Renderer geometry initialized");
 }
 
 void Renderer::initGeometry()
@@ -160,7 +188,6 @@ void Renderer::initGeometry()
     }
 
     indexCount = static_cast<unsigned int>(indices.size());
-
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -187,12 +214,15 @@ void Renderer::initGeometry()
 void Renderer::applyConfig() const
 {
     glClearColor(config.clearColorRed, config.clearColorGreen, config.clearColorBlue, config.clearColorAlpha);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
     Logger::debug("Renderer clear color applied: " + std::to_string(config.clearColorRed) + ", "
         + std::to_string(config.clearColorGreen) + ", " + std::to_string(config.clearColorBlue) + ", "
         + std::to_string(config.clearColorAlpha));
 }
 
-void Renderer::beginFrame() const { glClear(GL_COLOR_BUFFER_BIT); }
+void Renderer::beginFrame() const { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void Renderer::render(const Game& game, float elapsedTime) const
 {

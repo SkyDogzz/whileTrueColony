@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Game.hpp"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 struct RendererConfig {
     float clearColorRed = 0.08f;
@@ -22,6 +25,7 @@ private:
     unsigned int indexCount = 0;
 
     void initGeometry();
+    void initGeometry(const std::string& filename);
 
 public:
     Renderer();
